@@ -34,9 +34,10 @@ def message(payload):
   if (user_id == BOT_ID): return
   args = text.split(' ')
   if (args[0] == '!add'):
-    print(args)
-    se = ScheduleEvent(args[1], args[2], args[3] == "AM", args[4])
-    print(se.name, se.date)
+    se = ScheduleEvent(args[1], args[2], args[3].upper() == "AM", args[4])
+    if se.disabled: 
+      client.chat_postMessage(channel=channel_id, text=se.erMessage)
+      return
     shed.add(se)
   if (args[0] == '!remove'):
     shed.remove(args[1])
@@ -44,6 +45,12 @@ def message(payload):
     shed.next()
   if(args[0] == '!fetch'):
     shed.fetch()
+  if args[0] == '!help':
+    client.chat_postMessage(channel=channel_id, text="To add an event, use: !add <name> <time> <AM | PM> <MM/DD/YY>\n" +
+                                                      "To remove an event, use: !remove <name>\n" + 
+                                                      "To see the next event, use: !next\n" +
+                                                      "To see all events, use: !fetch\n" + 
+                                                      "To display this message, use: !help")
 
 if __name__ == '__main__':
   app.run(debug=True, port=3000)
